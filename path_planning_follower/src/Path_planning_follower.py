@@ -13,6 +13,13 @@ S = 0.0
 A = 0
 deltaT = 0.02
 L = 0.4
+Xd = []
+Yd = []
+thetad = []
+Vd = []
+Wd = []
+t = 0
+
 
 
 def path_cal(P1,P2,P3,goal):
@@ -101,7 +108,45 @@ def Vel_command(X,Y,theta,X_d,Y_d,theta_d,V_d,W_d):
     
     return V_com,W_com
 
+def command_pub(Vcom,Wcom):
+    global t
+    cmd_vel_topic = '/turtle1/cmd_vel'
+    com_pub = rospy.Publisher(cmd_vel_topic,Twist,queue_size=10)
+    
+    vel_msg = Twist()
+    vel_msg.linear.x = Vcom
+    vel_msg.linear.y = 0
+    vel_msg.linear.z = 0
+    vel_msg.angular.x = 0
+    vel_msg.angular.y = 0    
+    vel_msg.angular.z = Wcom
+    
+    com_pub.publish(vel_msg)
+    rospy.loginfo("command pub")	
+    t = t + 1
+ 
+    return
+
+def callback(data):
+    Xnow = data.x
+    Ynow = data.y
+    yaw = data.theta
+    print(Xnow,Ynow,yaw)
+    if t < len(Vd)-1:
+        Vcom,Wcom = Vel_command(Xnow,Ynow,yaw,Xd[t],Yd[t],thetad[t],Vd[t],Wd[t])
+    else:
+        Vcom = 0
+        Wcom = 0
+
+    command_pub(Vcom,Wcom)
+
+    return
+
+
+
 if __name__ == '__main__':
-    Xd,Yd,thetad,Vd,Wd = path_cal([-15,-15],[-25,-5],[-25,5],False)
-    Vcom,Wcom = Vel_command(-15,-15,3.14,Xd[0],Yd[0],thetad[0],Vd[0],Wd[0])
-    print(Vcom,Wcom)
+    Xd,Yd,thetad,Vd,Wd = path_cal([5,5],[9,4],[7,4],False)
+    rospy.init_node('PPF',anonymous=True)
+    rate = rospy.Rate(100)
+    rospy.Subscriber("/turtle1/pose",Pose,callback)
+    rospy.spin()
