@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <package format="2">
-  <name>path_planning_follower</name>
+  <name>Path-planning-follower</name>
   <version>0.0.0</version>
   <description>The path_planning_follower package</description>
 
