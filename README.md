@@ -22,16 +22,17 @@ Subscribe:
 /robot_pose (nav_msgs.msg/Odometry)
 /subgoal_position (geometry_msgs/Twist)
   with 
-linear.x = P1.x
-linear.y = P1.y
-linear.z = P2.x
-angular.x = P2.y
-angular.y = P3.x
-angular.z = P3.y
+  linear.x = P1.x
+  linear.y = P1.y
+  linear.z = P2.x
+  angular.x = P2.y
+  angular.y = P3.x
+  angular.z = P3.y
+
 
 Publish:
 
 /cmd_vel (geometry_msgs/Twist)
   with
-linear.x = V (linear velocity)
-angular.z = W (angular velocity)
+  linear.x = V (linear velocity)
+  angular.z = W (angular velocity)
