@@ -6,7 +6,7 @@ Block diagram about PPF node is following:
 ![image](image/PPF_blockdiagram.jpg)
 
 
-The detail theory about plan planning and control law refer to chapter 11, Robotics: Modeling, Planning and Control. B. Sicilano, L. Sciavicco, L. Villani
+The detail theory about path planning and control law refer to chapter 11, Robotics: Modeling, Planning and Control. B. Sicilano, L. Sciavicco, L. Villani
 
 How to use?
 
