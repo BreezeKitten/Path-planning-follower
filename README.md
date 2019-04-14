@@ -13,7 +13,7 @@ How to use?
 1.  git clone the package into your ROS workspace/src
 2.  cd path_planning_follower/src
 3.  chmod +x PPY.py   //this make the PPY.py be excutable
-4.  go back to you workspace, the catkin_make.
+4.  go back to you workspace, then catkin_make.
 
 Topic:
 
