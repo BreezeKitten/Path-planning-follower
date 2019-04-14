@@ -32,7 +32,7 @@ Subscribe:
 
 Publish:
 
-"/cmd_vel" (geometry_msgs/Twist):{
+"/cmd_vel" (geometry_msgs/Twist):{\n
   linear.x = V (linear velocity)
   angular.z = W (angular velocity)
 }
