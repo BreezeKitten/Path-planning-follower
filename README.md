@@ -40,5 +40,5 @@ angular.z = W (angular velocity)
 "/desired_path" (nav_msgs/Path)
 
 update @ 20190504   
-add a new topic the publish the calculated Path
-you can see the Path in rviz by adding the topic "/desired_path"
+add a new topic the publish the calculated Path  
+One can see the Path in rviz by adding the topic "/desired_path"  
