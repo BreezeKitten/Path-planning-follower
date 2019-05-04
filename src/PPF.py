@@ -5,6 +5,8 @@ import math as m
 import rospy
 from geometry_msgs.msg import Twist
 from geometry_msgs.msg import Point
+from nav_msgs.msg import Path
+from geometry_msgs.msg import PoseStamped
 
 from nav_msgs.msg import Odometry
 
@@ -27,11 +29,29 @@ yaw = 0
 theta_final = m.pi*3/2
 Vcom = 0
 Wcom = 0
+subgoal_x = 0
+subgoal_y = 0
+theta_f = 0
 
 cmd_vel_topic = "cmd_vel"
 com_pub = rospy.Publisher(cmd_vel_topic,Twist,queue_size=10)
+path_pub = rospy.Publisher("desired_path",Path,queue_size=10)
+
+
+# publish the Path update @ 20190504
+def Path_publish(X,Y):
+    com_path = Path()
+    com_path.header.frame_id = "map"
+    for i in range(0,len(X)-1):
+	pose = PoseStamped()
+	pose.pose.position.x = X[i]
+	pose.pose.position.y = Y[i]
+	com_path.poses.append(pose)
+    path_pub.publish(com_path)
+    
 
 def path_cal(P1,P2,P3,goal):
+    global theta_f
     S = 0
     X_d = []
     Y_d = []
@@ -43,7 +63,8 @@ def path_cal(P1,P2,P3,goal):
     
     X_i = P1[0]
     Y_i = P1[1]
-    theta_i = m.atan2((P2[1]-P1[1]),(P2[0]-P1[0]))
+    theta_i = P1[2]
+   # theta_i = m.atan2((P2[1]-P1[1]),(P2[0]-P1[0]))
 
     X_f = P2[0]
     Y_f = P2[1]
@@ -60,6 +81,7 @@ def path_cal(P1,P2,P3,goal):
     by = k * m.sin(theta_i) + 3 * Y_i
     Xs = [X_f-X_i+ax+bx,3*X_i-ax-2*bx,-3*X_i+bx,X_i]
     Ys = [Y_f-Y_i+ay+by,3*Y_i-ay-2*by,-3*Y_i+by,Y_i]
+
     
     for j in range(0,1000):
         S = S + m.sqrt((np.polyval(Xs,j/1000)-np.polyval(Xs,(j+1)/1000))**2 +(np.polyval(Ys,j/1000)-np.polyval(Ys,(j+1)/1000))**2)
@@ -100,7 +122,7 @@ def path_cal(P1,P2,P3,goal):
 
 
 def Vel_command(X,Y,theta,X_d,Y_d,theta_d,V_d,W_d):
-    a = 1
+    a = 0.5
     damp = 0.7
     k1 = 2*damp*a
     k3 = k1
@@ -133,7 +155,6 @@ def command_pub(Vcom,Wcom):
     vel_msg.angular.z = Wcom
     
     com_pub.publish(vel_msg)
- #   rospy.loginfo("command pub")	
     t = t + 1
  
     return
@@ -158,7 +179,7 @@ def posecallback(data):
 	Vcom = np.sign(Vcom) * V_max
     if(abs(Wcom) > W_max):
 	Wcom = np.sign(Wcom) * W_max
-    print(Vcom,Wcom)
+#    print(Vcom,Wcom)
 #    command_pub(Vcom,Wcom)
 
     return
@@ -171,13 +192,16 @@ def subgoalCB(data):
     global Vd
     global Wd
     global t
+    global subgoal_x
+    global subgoal_y
     subgoal_x = data.linear.x
     subgoal_y = data.linear.y
     direct_x = data.linear.z
     direct_y = data.angular.x
-    Xd,Yd,thetad,Vd,Wd = path_cal([Xnow,Ynow],[subgoal_x,subgoal_y],[direct_x,direct_y],False)
+    if (abs(Xnow-subgoal_x) > 0.08) or (abs(Ynow-subgoal_y) > 0.08):
+    	Xd,Yd,thetad,Vd,Wd = path_cal([Xnow,Ynow,yaw],[subgoal_x,subgoal_y],[direct_x,direct_y],False)
+    Path_publish(Xd,Yd)
     t = 0
- #   rospy.loginfo("subgoal change")
     return
 
 
@@ -189,7 +213,9 @@ if __name__ == '__main__':
     sub = rospy.Subscriber("/robot_pose",Odometry,posecallback)
     sub2 = rospy.Subscriber("/subgoal_position",Twist,subgoalCB)
     while not rospy.is_shutdown():
-	
+	if (abs(Xnow-subgoal_x) < 0.08) & (abs(Ynow-subgoal_y) < 0.08) & (abs(yaw - theta_f)< 0.5):
+	    Vcom = 0
+	    Wcom = 0
 	command_pub(Vcom,Wcom)
 	rate.sleep()	 
     
