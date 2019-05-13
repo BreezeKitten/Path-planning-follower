@@ -10,7 +10,7 @@ The detail theory about path planning and control law refer to chapter 11, Robot
 
 -------------------------------------------
 Update @ 20190513
-New version rename by PPY_slowdown.py
+New version rename by PPY_slowdown.py   
 In the version you can set goal to 1, then the velocity will be slow down when approaching the goal.
 
 
