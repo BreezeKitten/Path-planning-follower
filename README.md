@@ -20,9 +20,9 @@ How to use?
 
 1.  git clone the package into your ROS workspace/src  
 2.  cd path_planning_follower/src  
-3-1.  chmod +x PPY.py   //this make the PPY.py be excutable  
-3-2.  chmod +x PPY_slowdown.py   //this make the PPY_slowdown.py be excutable  
-4.  go back to you workspace, then catkin_make.
+3.  chmod +x PPY.py   //this make the PPY.py be excutable  
+4.  chmod +x PPY_slowdown.py   //this make the PPY_slowdown.py be excutable  
+5.  go back to you workspace, then catkin_make.
 
 Topic:
 
